@@ -1,0 +1,91 @@
+{
+  "family": "splunk-otel-collector",
+  "containerDefinitions": [
+    {
+      "name": "splunk-otel-collector",
+      "image": "quay.io/signalfx/splunk-otel-collector:latest",
+      "cpu": 0,
+      "memory": 512,
+      "portMappings": [
+        {
+          "name": "fluentforward",
+          "containerPort": 8006,
+          "hostPort": 8006,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-create-group": "true",
+          "awslogs-group": "/ecs/derek-testecstask",
+          "awslogs-region": "eu-west-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "essential": true,
+      "environment": [
+        {
+          "name": "HOST_DEV",
+          "value": "/hostfs/dev"
+        },
+        {
+          "name": "HOST_ETC",
+          "value": "/hostfs/etc"
+        },
+        {
+          "name": "SPLUNK_CONFIG",
+          "value": "/etc/otel/collector/ecs_ec2_config.yaml"
+        },
+        {
+          "name": "SPLUNK_REALM",
+          "value": "us1"
+        },
+        {
+          "name": "HOST_PROC",
+          "value": "/hostfs/proc"
+        },
+        {
+          "name": "SPLUNK_ACCESS_TOKEN",
+          "value": "<access token>"
+        },
+        {
+          "name": "HOST_SYS",
+          "value": "/hostfs/sys"
+        },
+        {
+          "name": "HOST_RUN",
+          "value": "/hostfs/run"
+        },
+        {
+          "name": "ECS_METADATA_EXCLUDED_IMAGES",
+          "value": "[\"quay.io/signalfx/splunk-otel-collector\"]"
+        },
+        {
+          "name": "HOST_VAR",
+          "value": "/hostfs/var"
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "hostfs",
+          "containerPath": "/hostfs",
+          "readOnly": true
+        }
+      ],
+      "volumesFrom": []
+    }
+  ],
+  "networkMode": "host",
+  "volumes": [
+    {
+      "name": "hostfs",
+      "host": {
+        "sourcePath": "/"
+      }
+    }
+  ],
+  "requiresCompatibilities": [
+    "EC2"
+  ]
+}
